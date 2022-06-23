@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "tree.h"
 
 /**
@@ -77,7 +78,7 @@ extern Node * insert(Node * tree, Node * n){
  * 
  * @param tree 
  * @param value 
- * @return Node* 
+ * @return Node* or NULL if value isn't in the tree
  */
 extern Node * search(Node * tree, char value){
     if(tree == NULL){
@@ -88,32 +89,19 @@ extern Node * search(Node * tree, char value){
         fprintf(stderr, "%s", "error empty value\n");
         exit(EXIT_FAILURE);
     }
-    Node * root = getRoot(tree);
-    if(value == root -> value){
-        return root;
-    }
-    if(value == tree -> value){
+    if(tree -> value == value){
         return tree;
-    }
-    if(tree -> left != NULL){
-        if(value == tree -> left -> value){
-            return tree -> left;
+    } 
+    if((int) value < (int) tree -> value){
+        if(tree -> left != NULL){
+            return search(tree -> left, value);
         }
-        return search(tree -> left, value);
     }
     if(tree -> right != NULL){
-        if(value == tree -> right -> value){
-            return tree -> right;
-        }
         return search(tree -> right, value);
     }
-    if(tree -> parent != NULL){
-        if(value == tree -> parent -> value){
-            return tree -> parent;
-        }
-        return search(tree -> parent, value);
-    }
-    return tree;
+
+    return NULL;
 }
 
 /**
@@ -136,12 +124,12 @@ extern void display(Node * tree){
 }
 
 int main(){
-    Node * tree = createNode('a');
-    for(int i = 98; i < 123; i++){
-        Node * n = createNode(i);
+    srand(time(NULL));
+    Node * tree = createNode(97 + rand() % 25);
+    for(int i = 0; i < 26; i++){
+        Node * n = createNode(97 + rand() % 25);
         insert(tree, n);
     }
     display(tree);
-    printf("found : %c\n", search(tree, 'd') -> value);
     return EXIT_SUCCESS;
 }
