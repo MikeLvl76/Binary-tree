@@ -105,6 +105,24 @@ extern Node * search(Node * tree, char value){
 }
 
 /**
+ * @brief Change value of a node and return it
+ * 
+ * @param tree
+ * @param old 
+ * @param actual
+ * @return Node* or NULL if value isn't in the tree
+ */
+extern Node * edit(Node * tree, char old, char actual){
+    Node * o = search(tree, old);
+    if(o != NULL){
+        printf("old : %c\n", o -> value);
+        o -> value = actual;
+        printf("new : %c\n", o -> value);
+    }
+    return o;
+}
+
+/**
  * @brief Display non-null tree
  * 
  * @param tree 
@@ -130,6 +148,8 @@ int main(){
         Node * n = createNode(97 + rand() % 25);
         insert(tree, n);
     }
+    display(tree);
+    printf("%p\n", edit(tree, 'g', 'h'));
     display(tree);
     return EXIT_SUCCESS;
 }
