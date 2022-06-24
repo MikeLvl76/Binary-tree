@@ -22,26 +22,8 @@ extern Node * createNode(char value){
     }
     node -> left = NULL;
     node -> right = NULL;
-    node -> parent = NULL;
     node -> value = value;
     return node;
-}
-
-/**
- * @brief Get the root of a tree
- * 
- * @param tree 
- * @return Node* 
- */
-extern Node * getRoot(Node * tree){
-    if(tree == NULL){
-        fprintf(stderr, "%s", "null pointer error\n");
-        exit(EXIT_FAILURE);
-    }
-    if(tree -> parent == NULL){
-        return tree;
-    }
-    return getRoot(tree -> parent);
 }
 
 /**
@@ -51,26 +33,21 @@ extern Node * getRoot(Node * tree){
  * @param n 
  * @return Node* 
  */
-extern Node * insert(Node * tree, Node * n){
-    if(tree == NULL || n == NULL){
-        fprintf(stderr, "%s", "null pointer error\n");
+extern Node * insert(Node * node, char value){
+    if(value == '\0'){
+        fprintf(stderr, "%s", "error empty value\n");
         exit(EXIT_FAILURE);
     }
-    if((int) n -> value < (int) tree -> value){
-        if(tree -> left == NULL){
-            tree -> left = n;
-            tree -> left -> parent = tree;
-            return n;
-        }
-        return insert(tree -> left, n);
+    if(node == NULL){
+        return createNode(value);
     }
-    if(tree -> right == NULL){
-            tree -> right = n;
-            tree -> right -> parent = tree;
-            return n;
-        }
-        return insert(tree -> right, n);
-    return NULL;
+
+    if((int) value < (int) node -> value){
+        node -> left = insert(node -> left, value);
+    } else {
+        node -> right = insert(node -> right, value);
+    }
+    return node;
 }
 
 /**
@@ -111,7 +88,7 @@ extern Node * search(Node * tree, char value){
         fprintf(stderr, "%s", "error empty value\n");
         exit(EXIT_FAILURE);
     }
-    return searchNode(getRoot(tree), value);
+    return searchNode(tree, value);
 }
 
 /**
@@ -122,62 +99,89 @@ extern Node * search(Node * tree, char value){
  * @param actual
  * @return Node* or NULL if value isn't in the tree
  */
-extern Node * edit(Node * tree, char old, char actual){
+extern Node * edit(Node * tree, char old, char current){
     Node * o = search(tree, old);
     if(o != NULL){
-        o -> value = actual;
+        o -> value = current;
     }
     return o;
 }
 
 /**
- * @brief Remove an existing node from a tree by its value
+ * @brief Find the left child recursively
  * 
  * @param tree 
+ * @return Node* or NULL
+ */
+Node * findLeftest(Node * tree){
+    Node * current = tree;
+
+    while (current && current -> left != NULL) {
+        current = current -> left;
+    }
+ 
+    return current;
+}
+
+/**
+ * @brief Remove an existing node from a tree by its value and
+ * change the root after the deletion,
+ * if the value cannot be found, root isn't changed
+ * 
+ * @param root 
  * @param value 
- * @return Node* or NULL if value isn't in the tree
+ * @return Node*
  */
-extern Node * delete(Node * tree, char value){
+extern Node * delete(Node * root, char value){
 
+    if (root == NULL){
+        return root;
+    }
+ 
+    if ((int) value < (int) root -> value){
+        root -> left = delete(root -> left, value);
+    } else if ((int) value > (int) root -> value){
+        root -> right = delete(root -> right, value);
+    } else {
+        if (root -> left == NULL) {
+            Node * temp = root -> right;
+            free(root);
+            return temp;
+        } else if (root -> right == NULL) {
+            Node * temp = root -> left;
+            free(root);
+            return temp;
+        }
+
+        Node * temp = findLeftest(root -> right);
+        root -> value = temp -> value;
+        root -> right = delete(root -> right, temp -> value);
+    }
+    return root;
 }
 
 /**
- * @brief Display non-null tree but the tree can be a subtree
+ * @brief Display non-null tree
  * 
  * @param tree 
  */
-void displayNodes(Node * tree){
-    if(tree -> left != NULL){
-        displayNodes(tree -> left);
+void display(Node * tree){
+    if(tree != NULL){
+        display(tree -> left);
+        printf("%c ", tree -> value);
+        display(tree -> right);
     }
-    printf("%c\n", tree -> value);
-    if(tree -> right != NULL){
-        displayNodes(tree -> right);
-    }
-}
-
-/**
- * @brief Display non-null tree fully
- * 
- * @param tree 
- */
-extern void display(Node * tree){
-    if(tree == NULL){
-        fprintf(stderr, "%s", "null pointer error\n");
-        exit(EXIT_FAILURE);
-    }
-    displayNodes(getRoot(tree));
 }
 
 int main(){
     srand(time(NULL));
-    Node * tree = createNode(97 + rand() % 25);
+    Node * tree = NULL;
     for(int i = 0; i < 26; i++){
-        Node * n = createNode(97 + rand() % 25);
-        insert(tree, n);
+        tree = insert(tree, 97 + rand() % 25);
     }
     display(tree);
-    printf("root : %c\n", getRoot(tree) -> value);
-    printf("%p\n", edit(tree, 'g', 'h'));
+    tree = delete(tree, 'b');
+    printf("new root : %c\n", tree -> value);
+    display(tree);
     return EXIT_SUCCESS;
 }
