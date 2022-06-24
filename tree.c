@@ -57,38 +57,19 @@ extern Node * insert(Node * node, char value){
  * @param value 
  * @return Node* or NULL if value isn't in the tree
  */
-Node * searchNode(Node * tree, char value){
-    if(tree -> value == value){
-        return tree;
-    } 
-    if(tree -> left != NULL){
+Node * search(Node * tree, char value){
+    if(tree != NULL){
+        if(tree -> value == value){
+            return tree;
+        }
         if((int) value < (int) tree -> value){
-            return searchNode(tree -> left, value);
+            return search(tree -> left, value);
+        }
+        if((int) value > (int) tree -> value){
+            return search(tree -> right, value);
         }
     }
-    if(tree -> right != NULL){
-        return searchNode(tree -> right, value);
-    }
-    return NULL;
-}
-
-/**
- * @brief Search a node by its value in a tree
- * 
- * @param tree 
- * @param value 
- * @return Node* or NULL if value isn't in the tree
- */
-extern Node * search(Node * tree, char value){
-    if(tree == NULL){
-        fprintf(stderr, "%s", "null pointer error\n");
-        exit(EXIT_FAILURE);
-    }
-    if(value == '\0'){
-        fprintf(stderr, "%s", "error empty value\n");
-        exit(EXIT_FAILURE);
-    }
-    return searchNode(tree, value);
+    return tree;
 }
 
 /**
@@ -180,8 +161,13 @@ int main(){
         tree = insert(tree, 97 + rand() % 25);
     }
     display(tree);
-    tree = delete(tree, 'b');
-    printf("new root : %c\n", tree -> value);
-    display(tree);
+    printf("\n");
+    Node ** array = malloc(sizeof(Node *));
+    for(int i = 0; i < 10; i++){
+        char c = 97 + rand() % 25;
+        printf("Looking for : %c\n", c);
+        array[i] = search(tree, c);
+        printf("Found : %c\n", array[i] != NULL ? array[i] -> value : '0');
+    }
     return EXIT_SUCCESS;
 }
