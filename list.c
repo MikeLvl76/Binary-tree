@@ -51,7 +51,7 @@ extern Cell *insert(Cell *list, char value)
 
     Cell *inserted = insert(list->next, value);
     list->next = inserted;
-    inserted->previous = list->next;
+    list->next->previous = list;
 
     return list;
 }
@@ -61,27 +61,25 @@ extern Cell *insert(Cell *list, char value)
  *
  * @param list
  * @param value
- * @return Cell* or NULL if value isn't in the list
+ * @return true or false whether the cell is in or not
  */
-extern Cell *search(Cell *list, char value)
+extern bool search(Cell *list, char value)
 {
-    if (list != NULL)
+    Cell *forward = list;
+    Cell *backward = list;
+    while (forward != NULL)
     {
-
-        if (list->value == value)
-        {
-            return list;
-        }
-
-        Cell *prev = search(list->previous, value);
-        Cell *nxt = search(list->next, value);
-        if (prev == NULL)
-        {
-            return nxt;
-        }
-        return prev;
+        if (forward->value == value)
+            return true;
+        forward = forward->next;
     }
-    return list;
+    while (backward != NULL)
+    {
+        if (backward->value == value)
+            return true;
+        backward = backward->next;
+    }
+    return false;
 }
 
 int main()
@@ -91,12 +89,24 @@ int main()
     for (int i = 0; i < 26; i++)
     {
         char c = 97 + rand() % 25;
-        printf("%c\n", c);
+        printf("%c ", c);
         cell = insert(cell, c);
     }
-    while(cell -> next != NULL){
-        printf("Value %c\n", cell -> next -> value);
-        cell = cell -> next;
+    printf("\n%c ", cell->value);
+    Cell *iterate = cell;
+    while (iterate->next != NULL)
+    {
+        printf("%c ", iterate->next->value);
+        iterate = iterate->next;
+    }
+    char c = 97 + rand() % 25;
+    if (search(cell, c))
+    {
+        printf("\nFound %c !\n", c);
+    }
+    else
+    {
+        printf("\n%c was not found !\n", c);
     }
     return EXIT_SUCCESS;
 }
