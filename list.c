@@ -77,9 +77,33 @@ extern bool search(Cell *list, char value)
     {
         if (backward->value == value)
             return true;
-        backward = backward->next;
+        backward = backward->previous;
     }
     return false;
+}
+
+/**
+ * @brief Get the size of a list
+ *
+ * @param list
+ * @return int
+ */
+extern int size(Cell *list)
+{
+    Cell *forward = list;
+    Cell *backward = list;
+    int count = 0;
+    while (forward != NULL)
+    {
+        count++;
+        forward = forward->next;
+    }
+    while (backward != NULL)
+    {
+        count++;
+        backward = backward->previous;
+    }
+    return count - 1; // one element counted twice
 }
 
 int main()
@@ -108,5 +132,6 @@ int main()
     {
         printf("\n%c was not found !\n", c);
     }
+    printf("Size: %d\n", size(cell));
     return EXIT_SUCCESS;
 }

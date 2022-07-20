@@ -16,7 +16,7 @@ extern Cell * insert(Cell * list, char value);
 extern bool search(Cell * list, char value);
 extern Cell * edit(Cell * list, char old, char n);
 extern Cell * rem(Cell * list, char value);
-extern int length(Cell * list);
+extern int size(Cell * list);
 extern void display(Cell * list);
 
 #endif
