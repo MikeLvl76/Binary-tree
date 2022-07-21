@@ -130,6 +130,37 @@ extern char peekLast(Cell **list)
 }
 
 /**
+ * @brief Replace cell value with another, if value cannot be found then function stops,
+ * only first occurence of value is replaced
+ * 
+ * @param list 
+ * @param old 
+ * @param n 
+ */
+extern void replace(Cell *list, char old, char n){
+    if(!list){
+        return;
+    }
+    if(!find(list, old)){
+        return;
+    }
+    if(list -> value == old){
+        list -> value = n;
+    } else {
+        while(list){
+            if(list -> value == old){
+                list -> value = n;
+                return;
+            }
+            list = list->next;
+        }
+    }
+}
+
+
+extern void rem(Cell *list, char value);
+
+/**
  * @brief Get the size of a list
  *
  * @param list
@@ -168,13 +199,7 @@ int main()
         push(&cell, c);
     }
     display(cell);
-    printf("First: %c\n", peekFirst(&cell));
-    printf("Last: %c\n", peekLast(&cell));
-    printf("Size: %d\n", size(cell));
-    printf("Pop %c\n", pop(&cell));
+    replace(cell, 'a', '/');
     display(cell);
-    printf("First: %c\n", peekFirst(&cell));
-    printf("Last: %c\n", peekLast(&cell));
-    printf("Size: %d\n", size(cell));
     return EXIT_SUCCESS;
 }

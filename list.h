@@ -17,7 +17,7 @@ extern bool find(Cell *list, char value);
 extern char pop(Cell **list);
 extern char peekFirst(Cell **list);
 extern char peekLast(Cell **list);
-extern void edit(Cell *list, char old, char n);
+extern void replace(Cell *list, char old, char n);
 extern void rem(Cell *list, char value);
 extern int size(Cell *list);
 extern void display(Cell *list);
