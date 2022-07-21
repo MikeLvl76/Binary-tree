@@ -14,8 +14,7 @@ extern Cell *createCell(char value)
 {
     if (!value)
     {
-        fprintf(stderr, "%s", "error empty value\n");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     Cell *cell = (Cell *)malloc(sizeof(Cell));
     if (!cell)
@@ -40,8 +39,7 @@ extern void push(Cell **list, char value)
 {
     if (!value)
     {
-        fprintf(stderr, "%s", "error empty value\n");
-        exit(EXIT_FAILURE);
+        return;
     }
     Cell *n = createCell(value);
     n->next = *list;
@@ -90,8 +88,8 @@ extern char pop(Cell **list)
 
 /**
  * @brief Retrieve first element without removing it
- * 
- * @param list 
+ *
+ * @param list
  * @return char or '/' if list is NULL
  */
 extern char peekFirst(Cell **list)
@@ -107,8 +105,8 @@ extern char peekFirst(Cell **list)
 
 /**
  * @brief Retrieve last element without removing it
- * 
- * @param list 
+ *
+ * @param list
  * @return char or '/' if list is NULL
  */
 extern char peekLast(Cell **list)
@@ -132,24 +130,28 @@ extern char peekLast(Cell **list)
 /**
  * @brief Replace cell value with another, if value cannot be found then function stops,
  * only first occurence of value is replaced
- * 
- * @param list 
- * @param old 
- * @param n 
+ *
+ * @param list
+ * @param old
+ * @param n
  */
-extern void replace(Cell *list, char old, char n){
-    if(!list){
+extern void replace(Cell *list, char old, char n)
+{
+    if (!list || !find(list, old))
+    {
         return;
     }
-    if(!find(list, old)){
-        return;
+    if (list->value == old)
+    {
+        list->value = n;
     }
-    if(list -> value == old){
-        list -> value = n;
-    } else {
-        while(list){
-            if(list -> value == old){
-                list -> value = n;
+    else
+    {
+        while (list)
+        {
+            if (list->value == old)
+            {
+                list->value = n;
                 return;
             }
             list = list->next;
@@ -157,8 +159,32 @@ extern void replace(Cell *list, char old, char n){
     }
 }
 
+/**
+ * @brief Remove a cell from list by its value
+ *
+ * @param list
+ * @param value
+ */
+extern void rem(Cell **list, char value)
+{
+    if(!list || !value || !find(*list, value))
+    {
+        return;
+    }
+    if((*list) -> value == value)
+    {
+        Cell *removed = *list;
+        char result = (*list)->value;
 
-extern void rem(Cell *list, char value);
+        (*list) = (*list)->next;
+        free(removed);
+    } 
+    else
+    {
+        rem(&(*list)->next, value);
+    }
+
+}
 
 /**
  * @brief Get the size of a list
@@ -199,7 +225,7 @@ int main()
         push(&cell, c);
     }
     display(cell);
-    replace(cell, 'a', '/');
+    rem(&cell, 'a');
     display(cell);
     return EXIT_SUCCESS;
 }
