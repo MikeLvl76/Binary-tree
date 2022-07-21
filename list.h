@@ -20,6 +20,6 @@ extern char peekLast(Cell **list);
 extern void replace(Cell *list, char old, char n);
 extern void rem(Cell **list, char value);
 extern int size(Cell *list);
-extern void display(Cell *list);
+extern void printList(Cell *list);
 
 #endif

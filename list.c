@@ -204,7 +204,7 @@ extern int size(Cell *list)
     return count;
 }
 
-extern void display(Cell *list)
+extern void printList(Cell *list)
 {
     Cell *current = list;
     while (current != NULL)
@@ -215,7 +215,7 @@ extern void display(Cell *list)
     printf("NULL\n");
 }
 
-int main()
+/*int main()
 {
     srand(time(NULL));
     Cell *cell = NULL;
@@ -224,8 +224,8 @@ int main()
         char c = 97 + rand() % 25;
         push(&cell, c);
     }
-    display(cell);
+    printList(cell);
     rem(&cell, 'a');
-    display(cell);
+    printList(cell);
     return EXIT_SUCCESS;
-}
+}*/

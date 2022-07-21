@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "tree.h"
+#include "list.c"
 
 /**
  * @brief Create a Node variable with initializing all its attributes
@@ -12,10 +13,9 @@
  */
 extern Node *createNode(char value)
 {
-    if (value == '\0')
+    if (!value)
     {
-        fprintf(stderr, "%s", "error empty value\n");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     Node *node = malloc(sizeof(Node));
     if (!node)
@@ -38,12 +38,11 @@ extern Node *createNode(char value)
  */
 extern Node *insert(Node *node, char value)
 {
-    if (value == '\0')
+    if (!value)
     {
-        fprintf(stderr, "%s", "error empty value\n");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
-    if (node == NULL)
+    if (!node)
     {
         return createNode(value);
     }
@@ -68,7 +67,7 @@ extern Node *insert(Node *node, char value)
  */
 extern Node *search(Node *tree, char value)
 {
-    if (tree != NULL)
+    if (tree)
     {
         if (tree->value == value)
         {
@@ -97,7 +96,7 @@ extern Node *search(Node *tree, char value)
 extern Node *edit(Node *tree, char old, char current)
 {
     Node *o = search(tree, old);
-    if (o != NULL)
+    if (o)
     {
         o->value = current;
     }
@@ -134,7 +133,7 @@ Node *findLeftest(Node *tree)
 extern Node *delete (Node *root, char value)
 {
 
-    if (root == NULL)
+    if (!root)
     {
         return root;
     }
@@ -176,7 +175,7 @@ extern Node *delete (Node *root, char value)
  */
 void display(Node *tree)
 {
-    if (tree != NULL)
+    if (tree)
     {
         display(tree->left);
         printf("%c ", tree->value);
@@ -188,19 +187,14 @@ int main()
 {
     srand(time(NULL));
     Node *tree = NULL;
+    Cell *list = NULL;
     for (int i = 0; i < 26; i++)
     {
-        tree = insert(tree, 97 + rand() % 25);
+        char c = 97 + rand() % 25;
+        push(&list, c);
+        tree = insert(tree, list->value);
     }
     display(tree);
     printf("\n");
-    Node **array = malloc(sizeof(Node));
-    for (int i = 0; i < 10; i++)
-    {
-        char c = 97 + rand() % 25;
-        printf("Looking for : %c\n", c);
-        array[i] = search(tree, c);
-        printf("Found : %c\n", array[i] != NULL ? array[i]->value : '/');
-    }
     return EXIT_SUCCESS;
 }
