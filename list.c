@@ -71,7 +71,7 @@ extern bool find(Cell *list, char value)
  * @brief Retrieve and remove the first cell of the list
  *
  * @param list
- * @return Cell* or NULL if list is empty
+ * @return char or '/' if list is empty
  */
 extern char pop(Cell **list)
 {
@@ -86,6 +86,47 @@ extern char pop(Cell **list)
     free(removed);
 
     return result;
+}
+
+/**
+ * @brief Retrieve first element without removing it
+ * 
+ * @param list 
+ * @return char or '/' if list is NULL
+ */
+extern char peekFirst(Cell **list)
+{
+    if (!(*list))
+    {
+        return '/';
+    }
+    char result = (*list)->value;
+
+    return result;
+}
+
+/**
+ * @brief Retrieve last element without removing it
+ * 
+ * @param list 
+ * @return char or '/' if list is NULL
+ */
+extern char peekLast(Cell **list)
+{
+    if (!(*list))
+    {
+        return '/';
+    }
+    Cell *current = *list;
+    while (current)
+    {
+        current = current->next;
+        if (!current->next)
+        {
+            return current->value;
+        }
+    }
+    return '/';
 }
 
 /**
@@ -127,10 +168,13 @@ int main()
         push(&cell, c);
     }
     display(cell);
+    printf("First: %c\n", peekFirst(&cell));
+    printf("Last: %c\n", peekLast(&cell));
     printf("Size: %d\n", size(cell));
-    char r = pop(&cell);
-    printf("Pop %c\n", r ? r : '/');
+    printf("Pop %c\n", pop(&cell));
     display(cell);
+    printf("First: %c\n", peekFirst(&cell));
+    printf("Last: %c\n", peekLast(&cell));
     printf("Size: %d\n", size(cell));
     return EXIT_SUCCESS;
 }
