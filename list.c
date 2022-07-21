@@ -12,74 +12,80 @@
  */
 extern Cell *createCell(char value)
 {
-    if (value == '\0')
+    if (!value)
     {
         fprintf(stderr, "%s", "error empty value\n");
         exit(EXIT_FAILURE);
     }
-    Cell *cell = malloc(sizeof(Cell));
+    Cell *cell = (Cell *)malloc(sizeof(Cell));
     if (!cell)
     {
         fprintf(stderr, "%s", "memory allocation error\n");
         exit(EXIT_FAILURE);
     }
     cell->next = NULL;
-    cell->previous = NULL;
     cell->value = value;
     return cell;
 }
 
 /**
- * @brief Insert a new cell to list of cells,
+ * @brief Push a new cell to list of cells,
  * if list is NULL then a cell is created with value in arg
  *
  * @param list
  * @param value
  * @return Cell*
  */
-extern Cell *insert(Cell *list, char value)
+extern void push(Cell **list, char value)
 {
-    if (value == '\0')
+    if (!value)
     {
         fprintf(stderr, "%s", "error empty value\n");
         exit(EXIT_FAILURE);
     }
-    if (list == NULL)
-    {
-        return createCell(value);
-    }
-
-    Cell *inserted = insert(list->next, value);
-    list->next = inserted;
-    list->next->previous = list;
-
-    return list;
+    Cell *n = createCell(value);
+    n->next = *list;
+    *list = n;
 }
 
 /**
- * @brief Search a cell by its value in a list
+ * @brief Find a cell by its value in a list
  *
  * @param list
  * @param value
  * @return true or false whether the cell is in or not
  */
-extern bool search(Cell *list, char value)
+extern bool find(Cell *list, char value)
 {
-    Cell *forward = list;
-    Cell *backward = list;
-    while (forward != NULL)
+    Cell *current = list;
+    while (current)
     {
-        if (forward->value == value)
+        if (current->value == value)
             return true;
-        forward = forward->next;
-    }
-    while (backward != NULL)
-    {
-        if (backward->value == value)
-            return true;
-        backward = backward->previous;
+        current = current->next;
     }
     return false;
+}
+
+/**
+ * @brief Retrieve and remove the first cell of the list
+ *
+ * @param list
+ * @return Cell* or NULL if list is empty
+ */
+extern char pop(Cell **list)
+{
+    if (!(*list))
+    {
+        return '/';
+    }
+    Cell *removed = *list;
+    char result = (*list)->value;
+
+    (*list) = (*list)->next;
+    free(removed);
+
+    return result;
 }
 
 /**
@@ -90,20 +96,25 @@ extern bool search(Cell *list, char value)
  */
 extern int size(Cell *list)
 {
-    Cell *forward = list;
-    Cell *backward = list;
+    Cell *current = list;
     int count = 0;
-    while (forward != NULL)
+    while (current)
     {
         count++;
-        forward = forward->next;
+        current = current->next;
     }
-    while (backward != NULL)
+    return count;
+}
+
+extern void display(Cell *list)
+{
+    Cell *current = list;
+    while (current != NULL)
     {
-        count++;
-        backward = backward->previous;
+        printf("%c -> ", current->value);
+        current = current->next;
     }
-    return count - 1; // one element counted twice
+    printf("NULL\n");
 }
 
 int main()
@@ -113,25 +124,13 @@ int main()
     for (int i = 0; i < 26; i++)
     {
         char c = 97 + rand() % 25;
-        printf("%c ", c);
-        cell = insert(cell, c);
+        push(&cell, c);
     }
-    printf("\n%c ", cell->value);
-    Cell *iterate = cell;
-    while (iterate->next != NULL)
-    {
-        printf("%c ", iterate->next->value);
-        iterate = iterate->next;
-    }
-    char c = 97 + rand() % 25;
-    if (search(cell, c))
-    {
-        printf("\nFound %c !\n", c);
-    }
-    else
-    {
-        printf("\n%c was not found !\n", c);
-    }
+    display(cell);
+    printf("Size: %d\n", size(cell));
+    char r = pop(&cell);
+    printf("Pop %c\n", r ? r : '/');
+    display(cell);
     printf("Size: %d\n", size(cell));
     return EXIT_SUCCESS;
 }
